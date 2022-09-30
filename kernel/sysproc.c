@@ -24,6 +24,39 @@ sys_getpid(void)
 }
 
 uint64
+sys_trace()
+{
+  int n;
+  if(argint(0,&n) < 0 )
+    return -1;
+  myproc()->mask = n;
+  return 0;
+  
+}
+
+#include "sysinfo.h"
+uint64 
+sys_sysinfo(void)
+{
+    struct sysinfo info;
+    info.freemem = FreeMem();
+    info.nproc = FreeProc();
+    info.freefd = FreeFile();
+
+    uint64 st ;
+    if (argaddr(0,&st) < 0)
+      return -1 ;
+    
+    struct proc *p = myproc();
+
+    if (copyout(p->pagetable,st,(char *)&info,sizeof(info))<0)
+      return -1;
+    return 0;
+
+
+}
+
+uint64
 sys_fork(void)
 {
   return fork();

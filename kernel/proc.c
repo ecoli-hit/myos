@@ -266,7 +266,7 @@ fork(void)
   if((np = allocproc()) == 0){
     return -1;
   }
-
+  np->mask = p->mask;
   // Copy user memory from parent to child.
   if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
     freeproc(np);
@@ -692,4 +692,37 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+
+uint64 FreeProc(){
+
+  struct proc p;
+
+  uint64 cnt = 0;
+
+  for (int i =0 ;i<NPROC;i++){
+    p=proc[i];
+    if (p.state == UNUSED){
+      cnt++;
+    }
+  }
+
+  return cnt;
+
+}
+
+uint64 FreeFile(){
+  uint64 cnt=0;
+
+  struct proc * p = myproc();
+
+  for (int  i = 0; i < NOFILE; i++)
+  {
+    if(p->ofile[i]==0){
+      cnt++;
+    }
+  }
+  return cnt;
+  
 }
